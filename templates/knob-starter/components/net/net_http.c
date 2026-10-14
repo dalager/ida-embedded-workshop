@@ -133,10 +133,16 @@ static bool put_once(const put_t *p, int attempt)
     return ok;
 }
 
+static bool put_args_ok(const char *url, uint64_t total_len, net_rewind_cb_t rewind_cb,
+                        net_read_cb_t read_cb)
+{
+    return url && rewind_cb && read_cb && total_len > 0;
+}
+
 bool net_http_put_stream(const char *url, uint64_t total_len, net_rewind_cb_t rewind_cb,
                          net_read_cb_t read_cb, void *ctx, net_progress_cb_t progress_cb)
 {
-    if (!url || !rewind_cb || !read_cb || total_len == 0) return false;
+    if (!put_args_ok(url, total_len, rewind_cb, read_cb)) return false;
     put_t p = { .url = url, .total = total_len, .rewind_cb = rewind_cb, .read_cb = read_cb,
                 .ctx = ctx, .progress_cb = progress_cb };
     // PSRAM, on purpose: the internal heap is what lwIP and mbedTLS fight over.

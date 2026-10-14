@@ -133,14 +133,55 @@ Applied to the template:
 - Smell: a screen file that includes `net.h` to fire a request. That is strong coupling across
   distance between a volatile and a stable module. Route it through `app`.
 
-## 7. Done checklist
+## 7. Low cyclomatic complexity
+
+Cyclomatic complexity counts the independent paths through a function: one, plus one for every
+`if`, `else if`, `case`, `&&`, `||`, `?:`, loop and early `return` inside a loop. It is the
+best single predictor of where bugs hide and of what a reader (or an assistant) gets wrong.
+Firmware grows it fast: error handling, state machines and hardware quirks all add branches.
+
+Targets for the workshop, per function:
+
+| Complexity | Verdict |
+|---|---|
+| 1–5 | Fine. Most functions in the template sit here. |
+| 6–9 | Acceptable if the function is a flat dispatcher (one `switch`, one line per case). |
+| ≥ 10 | Split before merging. Nesting deeper than three levels is the same signal. |
+
+Tactics that work in C, all used in the template:
+
+- **Guard clauses first.** `if (!cli) return false;` at the top instead of wrapping the body
+  in `if (cli) { ... }`. Each guard is one branch, but nesting stays flat.
+- **Tables instead of branches.** A state → colour map (`theme.c`), a state → text map, an
+  array of handlers indexed by an enum. One lookup replaces a `switch` that grows per state.
+- **Pure decision, separate effect.** `knob_decode_step()` returns `+1/-1/0`; the caller only
+  acts on it. The decision function is where the branches live, and it is host-tested, so the
+  effect function stays almost straight-line.
+- **Extract the named predicate.** `if (resp_has_room(c, len))` beats
+  `if (c->buf && c->len + len < c->cap - 1)`. The condition gets a name and its own test.
+- **One retry loop, one attempt function.** `net_http_put_stream()` loops; `put_once()` does
+  one attempt. Neither has to know about the other's branches.
+- **No boolean parameters that pick a path.** Two functions beat one function with a flag
+  that doubles its paths.
+
+Measure, do not guess. Any of these works from the project root with no IDF:
+
+```bash
+pipx run lizard -C 10 components/ main/     # CCN per function, warns above 10 (or pip install lizard)
+sudo apt install pmccabe && pmccabe components/*/*.c | sort -rn | head
+```
+
+Ask the assistant to run the tool on what it just wrote and to split anything flagged. It
+will usually propose a table or a guard clause on its own once it sees the number.
+
+## 8. Done checklist
 
 Run this before saying a firmware change is finished.
 
 - [ ] Builds in the Docker toolchain with zero warnings in your components.
 - [ ] `scripts/check-board-pins.sh` passes: no GPIO literal outside `components/board`.
 - [ ] Every pure module touched has a host test, and `scripts/test.sh` is green.
-- [ ] No file over 300 lines; no function over ~60.
+- [ ] No file over 300 lines; no function over ~60 lines or cyclomatic complexity 10.
 - [ ] Each public header documents ownership, dependencies, threading and pointer lifetimes.
 - [ ] No new `#include` crosses the dependency direction in §1.
 - [ ] No blocking call inside an LVGL callback; no LVGL call outside the lock.
