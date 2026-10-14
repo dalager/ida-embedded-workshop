@@ -1,0 +1,38 @@
+name: ci
+on:
+  push: { branches: [main] }
+  pull_request:
+jobs:
+  skills:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Skill frontmatter and size
+        run: |
+          set -e
+          for f in skills/*/SKILL.md; do
+            head -1 "$f" | grep -q '^---$' || { echo "$f: missing frontmatter"; exit 1; }
+            grep -q '^name: ' "$f" || { echo "$f: missing name"; exit 1; }
+            grep -q '^description: ' "$f" || { echo "$f: missing description"; exit 1; }
+            n=$(wc -l < "$f"); [ "$n" -le 250 ] || { echo "$f: $n lines (> 250)"; exit 1; }
+            ! grep -qi 'claude' "$f" || { echo "$f: tool-specific wording"; exit 1; }
+          done
+          echo "skills ok"
+  host-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: gcc + Unity host tests
+        run: cd templates/knob-starter && ./scripts/test.sh
+  firmware:
+    runs-on: ubuntu-latest
+    container: espressif/idf:release-v5.3
+    steps:
+      - uses: actions/checkout@v4
+      - name: idf.py build (JC3636K518C)
+        run: |
+          cd templates/knob-starter
+          cp components/net/include/wifi_secrets.example.h components/net/include/wifi_secrets.h
+          . $IDF_PATH/export.sh >/dev/null
+          idf.py build
+          idf.py size-components | tail -20

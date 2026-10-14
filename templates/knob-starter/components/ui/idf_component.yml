@@ -1,0 +1,7 @@
+dependencies:
+  # Panel driver for the board's ST77916 round QSPI display.
+  espressif/esp_lcd_st77916: "^1.0.0"
+  # Official LVGL <-> esp_lcd glue (flush/tick/task/locking); pulls LVGL 9.
+  espressif/esp_lvgl_port: "^2.3.0"
+  # CST816 capacitive touch controller (I2C0). The K518's CST816D answers to the same driver.
+  espressif/esp_lcd_touch_cst816s: "^1.0.0"

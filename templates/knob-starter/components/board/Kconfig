@@ -1,0 +1,16 @@
+menu "Knob board"
+
+choice KNOB_BOARD
+    prompt "Target knob board"
+    default KNOB_BOARD_JC3636K518C
+    help
+        Which round-knob board this image is built for. Pins and capabilities come from
+        components/board/include/board_<name>.h; add a second board by adding a header and an
+        option here — never by sprinkling #ifdefs through the components.
+
+config KNOB_BOARD_JC3636K518C
+    bool "Guition JC3636K518C / Waveshare ESP32-S3-Knob-Touch-LCD-1.8 (no LED ring, ESP32 BT sidecar)"
+
+endchoice
+
+endmenu

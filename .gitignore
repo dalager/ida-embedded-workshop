@@ -1,0 +1,14 @@
+# ESP-IDF build output anywhere under templates/
+templates/**/build/
+templates/**/build-*/
+templates/**/managed_components/
+templates/**/sdkconfig
+templates/**/sdkconfig.old
+templates/**/wifi_secrets.h
+# host test binaries
+templates/**/test/host/build/
+# editors / OS
+.vscode/
+.idea/
+.DS_Store
+__pycache__/

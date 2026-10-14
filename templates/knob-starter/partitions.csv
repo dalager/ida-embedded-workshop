@@ -1,0 +1,6 @@
+# Custom partition table (plan §3.5). Audio recordings go to microSD, NEVER to SPIFFS.
+# Name,     Type, SubType, Offset, Size
+nvs,        data, nvs,     ,       24K
+phy_init,   data, phy,     ,       4K
+factory,    app,  factory, ,       9M
+storage,    data, spiffs,  ,       4M

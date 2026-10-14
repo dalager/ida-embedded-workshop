@@ -1,0 +1,12 @@
+{
+  "name": "knob-workshop",
+  "interface": { "displayName": "Knob Workshop" },
+  "plugins": [
+    {
+      "name": "knob-workshop",
+      "source": { "source": "local", "path": "./" },
+      "policy": { "installation": "AVAILABLE", "authentication": "ON_INSTALL" },
+      "category": "Developer Tools"
+    }
+  ]
+}

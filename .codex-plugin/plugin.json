@@ -1,0 +1,26 @@
+{
+  "name": "knob-workshop",
+  "description": "Build small ESP-IDF + LVGL firmware for the Guition JC3636K518C round knob display with any AI coding tool: verified pinout and gotchas, memory and performance constraints, code organisation rules, a tested starter template, networking under memory constraints, and backend integration patterns.",
+  "version": "0.1.0",
+  "author": { "name": "Christian Dalager", "url": "https://github.com/dalager" },
+  "homepage": "https://dalager.github.io/knob-workshop/",
+  "repository": "https://github.com/dalager/knob-workshop",
+  "license": "MIT",
+  "keywords": ["esp32", "esp-idf", "lvgl", "embedded", "firmware", "workshop"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Knob Workshop",
+    "shortDescription": "AI-assisted ESP-IDF + LVGL firmware for the JC3636K518C knob display.",
+    "longDescription": "Build small ESP-IDF + LVGL firmware for the Guition JC3636K518C round knob display with any AI coding tool: verified pinout and gotchas, memory and performance constraints, code organisation rules, a tested starter template, networking under memory constraints, and backend integration patterns.",
+    "developerName": "Christian Dalager",
+    "category": "Developer Tools",
+    "capabilities": ["Read", "Write"],
+    "websiteURL": "https://github.com/dalager/knob-workshop",
+    "defaultPrompt": [
+      "Scaffold a new knob firmware from the starter template and build it.",
+      "Make the counter follow the knob and buzz on every tenth detent.",
+      "Stream a 2 MB payload to the receiver and show a progress arc."
+    ],
+    "brandColor": "#008945"
+  }
+}
