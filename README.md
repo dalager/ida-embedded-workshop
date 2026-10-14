@@ -5,6 +5,8 @@ Build small ESP-IDF + LVGL firmware for the **Guition JC3636K518C** 1.8" round k
 tool**. The plugin is a set of plain-Markdown skills plus a tested starter template, distilled
 from a production firmware on the same board. Nothing in it depends on one AI vendor.
 
+![Three screens built from the template's design tokens: one accent colour per screen, a 270° gauge arc driven by the knob, Muli for labels and JetBrains Mono for machine data](docs/images/gauge-app-screens.png)
+
 | Skill | Load it when |
 |---|---|
 | `jc3636k518-device` | You need pins, what the board has and lacks, flashing, the gotchas |
@@ -22,6 +24,18 @@ streamed PUT, a tiny app, a serial test console for automated verification, host
 Unity, Docker build and host flash scripts.
 `templates/receiver/receiver.py` is a one-file HTTP receiver so the upload exercise needs no
 backend.
+
+<p align="center">
+  <img src="docs/images/knob-starter-screens.png" width="480" alt="The starter template's hello screen: idle (teal ring) and active (red ring) with the knob counter in the middle">
+</p>
+
+Every screenshot here is a pixel-exact LVGL framebuffer pulled over USB by the template's serial
+test console. The `verify-on-device` skill pairs that with a webcam frame of the real panel, which
+is the only thing that catches a frame that never reached the glass:
+
+<p align="center">
+  <img src="docs/images/verify-snapshot-vs-camera.jpg" width="480" alt="Left: LVGL snapshot of the active state over USB. Right: the same state seen by a webcam pointed at the knob">
+</p>
 
 ## Install
 
