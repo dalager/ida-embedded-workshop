@@ -9,6 +9,9 @@
 #include "haptic.h"
 #include "net.h"
 #include "app.h"
+#ifdef CONFIG_KNOB_TESTCTL
+#include "testctl.h"
+#endif
 
 static const char *TAG = "main";
 
@@ -37,5 +40,8 @@ void app_main(void)
     haptic_init(ui_i2c_bus());     // DRV2605L on the touch bus; no-op if absent
     net_init();                    // Wi-Fi STA in the background
     app_init();                    // screen + inputs + state machine
+#ifdef CONFIG_KNOB_TESTCTL
+    testctl_init();                // dev-only serial console (verify-on-device skill)
+#endif
     log_heap("after init");
 }

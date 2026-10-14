@@ -50,9 +50,10 @@ components/theme/   theme.c + tokens.h (colour = state)
 components/haptic/  haptic.c (DRV2605L)
 components/net/     net.c (Wi-Fi), net_http.c (GET + streamed PUT), upload_plan.c
 components/app/     app.c — the state machine; edit this first
+components/testctl/ dev-only serial test console: inject knob/tap/hold, dump the screen
 main/main.c         init order
 design/             tokens.json, tokens.h, principles.md, fonts + licences
-scripts/            build.sh, flash.sh, test.sh, check-board-pins.sh
+scripts/            build.sh, flash.sh, test.sh, check-board-pins.sh, testctl.py, verify-screens.sh
 test/host/          Unity + tests for the pure modules
 ```
 
@@ -80,6 +81,20 @@ screen in the idle colour.
 
 If the panel stays dark: backlight (GPIO47) not driven, or the wrong USB side. If colours are
 wrong: an extra invert. If the knob counts backwards: flip `BOARD_KNOB_DIRECTION`.
+
+## 3b. Drive it from the laptop
+
+The image answers on the same USB port it logs to (`components/testctl`, see the
+`verify-on-device` skill):
+
+```bash
+scripts/testctl.py ping            # > pong
+scripts/testctl.py knob +3         # > state=idle counter=3
+scripts/testctl.py snap shot.png   # pixel-exact LVGL screenshot
+scripts/verify-screens.sh          # scripted walk of the states, evidence in build/verify/
+```
+
+Every rung below ends with that walk, extended for the state the rung added.
 
 ## 4. Run the host tests
 
@@ -117,11 +132,14 @@ bool net_http_put_stream(const char *url, uint64_t total_len,
                          void (*progress_cb)(uint64_t sent, uint64_t total));
 // app
 void app_init(void);                         // starts the state machine
+void app_inject_knob(int steps);             // test hooks (testctl): same handlers as hardware
+void app_inject_tap(void);  void app_inject_hold(void);  void app_inject_reset(void);
+void app_state_line(char *buf, size_t cap);  // "state=idle counter=N"
 ```
 
 `main.c` calls, in this order: NVS init → `ui_init()` → `backlight_init()` →
-`haptic_init(ui_i2c_bus())` → `net_init()` → `app_init()`. Keep that order (a missing
-`backlight_init()` is the dark-panel symptom).
+`haptic_init(ui_i2c_bus())` → `net_init()` → `app_init()` → `testctl_init()` (dev builds).
+Keep that order (a missing `backlight_init()` is the dark-panel symptom).
 
 ## 6. The exercise ladder (UI half)
 
@@ -162,7 +180,8 @@ it holds the spine / detail / overlay model and the LVGL shapes for swipe and kn
 - When it proposes a pin, a component or a `CONFIG_` symbol, ask where it came from; the
   answer must be the board header, `idf_component.yml`, or the IDF docs for 5.3.
 - When it proposes a new file, ask which component owns it and what its header says.
-- Before accepting a change, run the done checklist in `firmware-code-organisation`.
+- Before accepting a change, run the done checklist in `firmware-code-organisation`, and
+  prove it on the board with `verify-on-device` (walk + snapshot, camera if there is one).
 
 ## 8. Troubleshooting
 
@@ -176,3 +195,5 @@ it holds the spine / detail / overlay model and the LVGL shapes for swipe and kn
 | Task watchdog on `lvgl_port` | Blocking call inside an LVGL callback or while holding the lock |
 | `Out of buffer` from HTTP client | Long URL: raise `buffer_size_tx` to 2048 |
 | Build fails on a `lv_*` symbol | LVGL 8 API; look the LVGL 9 name up in `managed_components/lvgl__lvgl` |
+| `testctl.py`: no reply | A terminal holds `/dev/ttyACM0`, or the console is not on USB Serial/JTAG (sdkconfig.defaults) |
+| Panel black, log says `ready` | Rendering never reached the panel (a 120 px font did this); the camera, not the log, catches it |

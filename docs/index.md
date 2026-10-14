@@ -27,3 +27,4 @@ already use. This site holds the workshop material; the plugin itself lives in t
 - [networking-under-memory-constraints](skills/networking-under-memory-constraints/SKILL.html)
 - [backend-integration-patterns](skills/backend-integration-patterns/SKILL.html)
 - [round-display-ux-navigation](skills/round-display-ux-navigation/SKILL.html)
+- [verify-on-device](skills/verify-on-device/SKILL.html)

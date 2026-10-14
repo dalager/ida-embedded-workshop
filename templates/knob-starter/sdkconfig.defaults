@@ -33,3 +33,10 @@ CONFIG_SPIRAM_ALLOW_BSS_SEG_EXTERNAL_MEMORY=y
 # for a multi-MB PUT. 16 KB each is only allocatable because LVGL's pool left internal RAM (above).
 CONFIG_LWIP_TCP_SND_BUF_DEFAULT=16384
 CONFIG_LWIP_TCP_WND_DEFAULT=16384
+
+# Console on the S3's native USB Serial/JTAG (the port scripts/flash.sh uses) so the test console
+# (components/testctl) can READ commands there, not just log. UART0 is unused on this board.
+CONFIG_ESP_CONSOLE_USB_SERIAL_JTAG=y
+
+# LVGL screen snapshot for the `snap` test command (framebuffer over serial).
+CONFIG_LV_USE_SNAPSHOT=y

@@ -34,22 +34,53 @@ static void on_knob_step(int dir)
     app_screen_set_counter(s_counter);
 }
 
+static void on_short_tap(void)
+{
+    haptic_click();
+    set_state(s_state == APP_ACTIVE ? APP_IDLE : APP_ACTIVE);
+}
+
+static void on_long_press(void)
+{
+    if (s_state == APP_UPLOADING) return;
+    haptic_click();
+    if (app_upload_start()) {
+        app_screen_set_progress(0, 1);
+        set_state(APP_UPLOADING);
+    } else {
+        set_state(APP_ERROR);
+    }
+}
+
 static void on_touch(lv_event_t *e)
 {
     lv_event_code_t code = lv_event_get_code(e);
-    if (code == LV_EVENT_SHORT_CLICKED) {
-        haptic_click();
-        set_state(s_state == APP_ACTIVE ? APP_IDLE : APP_ACTIVE);
-    } else if (code == LV_EVENT_LONG_PRESSED) {
-        if (s_state == APP_UPLOADING) return;
-        haptic_click();
-        if (app_upload_start()) {
-            app_screen_set_progress(0, 1);
-            set_state(APP_UPLOADING);
-        } else {
-            set_state(APP_ERROR);
-        }
-    }
+    if (code == LV_EVENT_SHORT_CLICKED)     on_short_tap();
+    else if (code == LV_EVENT_LONG_PRESSED) on_long_press();
+}
+
+// ---- test hooks (caller holds the LVGL lock) ----
+
+void app_inject_knob(int steps)
+{
+    int dir = steps < 0 ? -1 : 1;
+    for (int i = 0; i < (steps < 0 ? -steps : steps); i++) on_knob_step(dir);
+}
+
+void app_inject_tap(void)  { on_short_tap(); }
+void app_inject_hold(void) { on_long_press(); }
+
+void app_inject_reset(void)
+{
+    s_counter = 0;
+    app_screen_set_counter(0);
+    set_state(APP_IDLE);
+}
+
+void app_state_line(char *buf, size_t cap)
+{
+    static const char *const NAMES[] = { "idle", "active", "uploading", "done", "error" };
+    snprintf(buf, cap, "state=%s counter=%d", NAMES[s_state], s_counter);
 }
 
 // ---- 200 ms status tick (LVGL task) ----

@@ -1,0 +1,3 @@
+dependencies:
+  # snapshot + lv_draw_buf; the LVGL version itself is pinned once, in main/idf_component.yml.
+  lvgl/lvgl: "^9.2.0"

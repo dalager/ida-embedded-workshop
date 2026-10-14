@@ -14,10 +14,12 @@ from a production firmware on the same board. Nothing in it depends on one AI ve
 | `networking-under-memory-constraints` | Wi-Fi, HTTP, streaming uploads without exhausting internal RAM, rungs 7–10 |
 | `backend-integration-patterns` | You need a backend: pairing, tokens, resumable upload, contract-first API |
 | `round-display-ux-navigation` | Adding screens, lists, details, back, idle timeout; swipe + knob navigation on a round panel |
+| `verify-on-device` | Proving a change on the real board: serial test console (inject knob/tap/hold, read state), pixel-exact LVGL snapshot over USB, webcam check |
 
 `templates/knob-starter/` is the firmware the scaffold skill copies: board header, display and
 touch bring-up, knob decoder, theme tokens, haptic, a trimmed networking component with a
-streamed PUT, a tiny app, host tests with Unity, Docker build and host flash scripts.
+streamed PUT, a tiny app, a serial test console for automated verification, host tests with
+Unity, Docker build and host flash scripts.
 `templates/receiver/receiver.py` is a one-file HTTP receiver so the upload exercise needs no
 backend.
 

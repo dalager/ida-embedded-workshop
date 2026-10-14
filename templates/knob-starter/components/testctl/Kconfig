@@ -1,0 +1,12 @@
+menu "Knob test control"
+
+config KNOB_TESTCTL
+    bool "Serial test console on USB Serial/JTAG (inject knob/tap, dump screen)"
+    default y
+    help
+        A line-oriented console on the USB Serial/JTAG port for automated verification:
+        `knob +3`, `tap`, `hold`, `reset`, `state`, `snap`. Replies start with "> ". `snap` streams the LVGL
+        framebuffer as base64 rows prefixed "S:" (host: scripts/testctl.py). Disable for
+        production images.
+
+endmenu

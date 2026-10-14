@@ -14,9 +14,11 @@ components/theme/   design tokens (tokens.h) + colour = state policy, no LVGL de
 components/haptic/  DRV2605L on the touch I2C bus
 components/net/     Wi-Fi STA, buffered GET, streamed PUT through one 16 KB PSRAM chunk
 components/app/     the hello-world state machine (app.c), its screen, its upload exercise
+components/testctl/ dev-only serial test console (CONFIG_KNOB_TESTCTL): inject knob/tap/hold, snapshot
 main/main.c         boot order
 test/host/          Unity suites: board pins, knob decoder, theme wiring, upload part maths
-scripts/            build.sh (Docker), flash.sh (host esptool), test.sh (gcc), gen-fonts.sh
+scripts/            build.sh (Docker), flash.sh (host esptool), test.sh (gcc), gen-fonts.sh,
+                    testctl.py + verify-screens.sh (drive the device over USB, see verify-on-device)
 design/             tokens.json / tokens.h, principles.md, fonts + OFL licences
 ```
 
@@ -29,6 +31,9 @@ scripts/flash.sh                 # host esptool --no-stub over /dev/ttyACM0 (ful
 scripts/flash.sh /dev/ttyACM0 app   # later: app image only
 scripts/test.sh                  # host unit tests + GPIO-literal lint, no IDF needed
 python3 ../receiver/receiver.py  # on the laptop, for the upload exercise
+scripts/testctl.py knob +3       # inject 3 detents over USB  -> state=idle counter=3
+scripts/testctl.py snap shot.png # pixel-exact LVGL screenshot
+scripts/verify-screens.sh        # scripted state walk with snapshots, evidence in build/verify/
 ```
 
 Flash from the host, never from the container (no serial access there). `--no-stub` is required on
@@ -49,7 +54,8 @@ Image 1.36 MB of a 9 MB app partition; LVGL's 128 KB pool lives in PSRAM.
 | theme | `theme_state_color(state)`, `theme_state_motion_ms(state)`; tokens `HUD_*` |
 | haptic | `haptic_init(bus)`, `haptic_click()`, `haptic_play(effect)` |
 | net | `net_init()`, `net_is_connected()`, `net_wait_connected(ms)`, `net_rssi()`, `net_wifi_join(ssid, pass)`, `net_http_get(url, buf, cap)`, `net_http_put_stream(url, len, rewind_cb, read_cb, ctx, progress_cb)`, `net_set_result_cb(cb)` |
-| app | `app_init()`; states `APP_IDLE / ACTIVE / UPLOADING / DONE / ERROR` |
+| app | `app_init()`; states `APP_IDLE / ACTIVE / UPLOADING / DONE / ERROR`; test hooks `app_inject_knob/tap/hold/reset()`, `app_state_line()` |
+| testctl | `testctl_init()` — USB Serial/JTAG console: `knob ±N`, `tap`, `hold`, `reset`, `state`, `snap`, `ping` |
 
 Rules the code demonstrates: LVGL objects are touched only on the LVGL task (callbacks, timers)
 or inside `ui_lock()`; the network runs on its own task and reports back through a callback and
@@ -68,6 +74,8 @@ shared chunk; every pin is a `BOARD_*` macro.
 8. **GET JSON** — `net_http_get()` a value (e.g. a time API) from a network task; render it.
 9. **Stream 2 MiB** — hold the screen; watch the arc and `heap[before put]` / `heap[after put]`.
 10. **Survive a drop** — pull the AP mid-upload; add `X-Offset` resume using the receiver's GET.
+
+After each rung, extend `scripts/verify-screens.sh` with the state you added and run it.
 
 Hints: never call `net_*` from an LVGL callback (rung 8 needs `xTaskCreate`); if the panel is
 dark the backlight did not init; if colours are wrong you inverted twice.
