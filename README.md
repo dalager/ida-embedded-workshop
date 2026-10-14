@@ -13,6 +13,7 @@ from a production firmware on the same board. Nothing in it depends on one AI ve
 | `scaffold-knob-firmware` | Starting a new project from the template, first flash, exercise rungs 1–6 |
 | `networking-under-memory-constraints` | Wi-Fi, HTTP, streaming uploads without exhausting internal RAM, rungs 7–10 |
 | `backend-integration-patterns` | You need a backend: pairing, tokens, resumable upload, contract-first API |
+| `round-display-ux-navigation` | Adding screens, lists, details, back, idle timeout; swipe + knob navigation on a round panel |
 
 `templates/knob-starter/` is the firmware the scaffold skill copies: board header, display and
 touch bring-up, knob decoder, theme tokens, haptic, a trimmed networking component with a

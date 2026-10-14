@@ -1,6 +1,6 @@
 # Install card — plugin + toolchain
 
-Repo: `https://github.com/dalager/ida-embedded-workshop`. The plugin is six plain-Markdown skills plus a
+Repo: `https://github.com/dalager/ida-embedded-workshop`. The plugin is seven plain-Markdown skills plus a
 starter template; it needs nothing Claude-specific and works in any Agent-Skills-aware tool.
 
 ## 1. Install the plugin in your AI tool

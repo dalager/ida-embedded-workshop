@@ -153,6 +153,9 @@ name), `app_upload.c` (rungs 9–10). Fonts are in `components/ui/fonts/fonts.h`
 
 Then continue with rungs 7–10 in the `networking-under-memory-constraints` skill.
 
+Before adding a second screen, a list or a back button, load `round-display-ux-navigation`:
+it holds the spine / detail / overlay model and the LVGL shapes for swipe and knob navigation.
+
 ## 7. Working rhythm with an assistant
 
 - Give it the board skill and this one. Ask for one rung, then build and flash yourself.
