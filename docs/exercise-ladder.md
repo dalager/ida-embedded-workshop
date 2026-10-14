@@ -29,30 +29,37 @@ scripts/            build.sh (Docker), flash.sh (host esptool --no-stub), test.s
 
 ## UI half
 
+The template already runs a title, a knob counter, a tap toggle, a state ring, a haptic click
+and an RSSI line. Every rung **adapts** that working app; nothing is built from nothing.
+Widgets live in `components/app/app_screen.c`, behaviour in `components/app/app.c`.
+
 ### Rung 1 — Hello screen
-- **Goal:** the theme background with one centred label in Muli 28.
-- **Done when:** the label is readable inside the 340 px safe circle after a flash.
-- **Ask the AI:** "Add a centred label 'hello' to the home screen using the theme background and
-  the Muli 28 font already in `components/ui/fonts`."
+- **Goal:** your own title text in Muli 28, plus a separate small label for the state name.
+- **Done when:** both are readable inside the 340 px safe circle after a flash, and the title
+  is no longer overwritten when the state changes.
+- **Ask the AI:** "In `app_screen.c`, set the title to '<your text>' with `font_muli_28` and
+  add a state label so `app_screen_set_state()` writes there instead."
 - **Trap:** the AI reaches for `lv_font_montserrat_28` or LVGL 8 calls (`lv_obj_set_style_local_*`).
-  The template pins LVGL 9.
-- **Touches:** `components/app/app.c`, maybe `components/ui/ui.c`.
+  The template pins LVGL 9.6.
+- **Touches:** `components/app/app_screen.c`.
 
 ### Rung 2 — Knob counter
 - **Goal:** a number that follows the knob, one step per detent, both directions.
 - **Done when:** ten clockwise detents give +10, no skipped or doubled steps at normal speed.
-- **Ask the AI:** "Register a knob callback via `knob_init()` that increments or decrements a
-  counter label."
+- **Ask the AI:** "Make `on_knob_step` in `app.c` wrap the counter at 0..99 in both directions."
 - **Trap:** the AI replaces the 3 ms poll + `knob_decode.c` with PCNT or a quadrature driver.
   This knob is not quadrature; keep the decoder.
 - **Touches:** `components/app/app.c`.
 
 ### Rung 3 — Touch target
-- **Goal:** tapping the screen toggles a state (say, counting enabled/disabled).
-- **Done when:** a tap flips the state and the label shows it; the knob still works.
-- **Ask the AI:** "Add an LVGL click event on the screen that toggles an `enabled` flag."
-- **Trap:** touch handlers that call into net or block; keep them to state + a redraw.
-- **Touches:** `components/app/app.c`.
+- **Goal:** a second tap zone (a small circle) that toggles its own flag; the existing
+  whole-screen tap keeps toggling IDLE/ACTIVE.
+- **Done when:** tapping the circle flips it and the screen shows it; the knob still works.
+- **Ask the AI:** "Add a 56 px `lv_obj` circle at the bottom of the safe circle with its own
+  `LV_EVENT_SHORT_CLICKED` handler that flips a bool and re-renders."
+- **Trap:** `LV_EVENT_CLICKED` also fires after a long press, and the screen already uses
+  `LV_EVENT_LONG_PRESSED`. Handlers never call into net or block.
+- **Touches:** `components/app/app_screen.c`, `components/app/app.c`.
 
 ### Rung 4 — Colour = state
 - **Goal:** idle shows the teal accent, active shows the red one, using `theme_state_color()`
@@ -67,7 +74,7 @@ scripts/            build.sh (Docker), flash.sh (host esptool --no-stub), test.s
 ### Rung 5 — Haptic cue
 - **Goal:** one click on every state change.
 - **Done when:** you feel it, and the UI does not stutter.
-- **Ask the AI:** "Call `haptic_click()` on each state transition."
+- **Ask the AI:** "Play a different `haptic_play()` effect per state transition, exactly once each."
 - **Trap:** calling I2C from inside an LVGL animation callback; the haptic shares the touch bus.
 - **Touches:** `components/app/app.c`.
 
@@ -87,9 +94,9 @@ scripts/            build.sh (Docker), flash.sh (host esptool --no-stub), test.s
 
 ### Rung 7 — Join Wi-Fi, show RSSI
 - **Goal:** the knob joins your Wi-Fi and the screen shows the signal in dBm, refreshed every second.
-- **Done when:** RSSI updates on screen and the boot log shows an IP.
-- **Ask the AI:** "Fill in `wifi_secrets.h`, call `net_init()` at boot, and show `net_rssi()`
-  in a mono label updated by an LVGL timer."
+- **Done when:** RSSI updates on screen, "weak" appears below −75 dBm, the boot log shows an IP.
+- **Ask the AI:** "Move the RSSI line in `app.c` to its own 1 s `lv_timer`, append 'weak' below
+  −75 dBm, and log the internal heap once after the first IP."
 - **Trap:** the AI commits `wifi_secrets.h` (it is gitignored, keep it so) or polls Wi-Fi from
   the LVGL task with a blocking wait.
 - **Touches:** `components/net/include/wifi_secrets.h`, `components/app/app.c`.

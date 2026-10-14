@@ -49,7 +49,7 @@ Log the posture at named phases and keep the numbers in your notes:
 ```c
 static void log_internal_heap(const char *phase) {
     ESP_LOGI(TAG, "heap[%s]: free-internal=%u min-free-internal=%u", phase,
-             (unsigned)heap_caps_get_free_size(MALLOC_CAP_INTERNAL),
+             (unsigned)heap_caps_get_free_size(MALLOC_CAP_INTERNAL),   // esp_heap_caps.h
              (unsigned)heap_caps_get_minimum_free_size(MALLOC_CAP_INTERNAL));
 }
 ```
@@ -165,8 +165,9 @@ transfer); the server's view of received parts is the truth.
 
 ## 8. Exercise ladder (network half)
 
-7. **Join Wi-Fi and show RSSI.** `net_init()` in `main.c`; a 1 s LVGL timer reads
-   `net_is_connected()` and `net_rssi()` into a label. Log the heap after the first IP.
+7. **Join Wi-Fi and show RSSI.** The template already shows `wi-fi N dBm` from its 200 ms
+   tick. Move it to its own 1 s `lv_timer`, append "weak" below −75 dBm, and log the internal
+   heap once after the first IP (`#include "esp_heap_caps.h"`).
 8. **GET a JSON value and render it.** `net_http_get(url, buf, cap)` from the network task,
    `cJSON` parse, push one number to the UI via callback. Keep `buf` ≤ 4 KB and in PSRAM.
 9. **Stream ≥ 2 MB with a progress arc.** Start `receiver.py` on the laptop; generate the

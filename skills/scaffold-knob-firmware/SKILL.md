@@ -63,7 +63,7 @@ scripts/build.sh            # runs idf.py build inside espressif/idf:release-v5.
 ```
 
 First build downloads managed components (LVGL 9, esp_lcd_st77916, esp_lvgl_port,
-esp_lcd_touch_cst816s) and takes several minutes. Output: `build/knob_starter.bin`. A clean
+esp_lcd_touch_cst816s) and takes a few minutes the first time (seconds afterwards). Output: `build/knob_starter.bin`. A clean
 build has no warnings from `components/`.
 
 ## 3. Flash and watch it boot
@@ -119,27 +119,37 @@ bool net_http_put_stream(const char *url, uint64_t total_len,
 void app_init(void);                         // starts the state machine
 ```
 
-`main.c` calls, in this order: NVS init → `ui_init()` → `haptic_init(ui_i2c_bus())` →
-`net_init()` → `app_init()`. Keep that order.
+`main.c` calls, in this order: NVS init → `ui_init()` → `backlight_init()` →
+`haptic_init(ui_i2c_bus())` → `net_init()` → `app_init()`. Keep that order (a missing
+`backlight_init()` is the dark-panel symptom).
 
 ## 6. The exercise ladder (UI half)
 
-Each rung is one small change, built, flashed and seen. Ask the assistant for one rung at a
-time; commit after each.
+The template already runs: a title, a knob counter, a tap that toggles IDLE/ACTIVE, a state
+ring in the theme colour, a haptic click, and the Wi-Fi RSSI line. Every rung is an **adapt**
+task on that working app, one small change at a time: build, flash `app`, look, commit.
+The app lives in `components/app/`: `app.c` (state machine, knob and tap handlers, timers),
+`app_screen.c/.h` (every widget; `app_screen_set_state()` rewrites the title with the state
+name), `app_upload.c` (rungs 9–10). Fonts are in `components/ui/fonts/fonts.h`
+(`font_muli_28`); colours and geometry are the `HUD_*` macros in
+`components/theme/include/tokens.h` (`HUD_BG`, `HUD_INK`, `HUD_SAFE_DIA`, ...).
 
-1. **Hello screen.** In `app.c`, change the label text and put it in the 28 px Muli font.
-   Keep it inside the 340 px safe circle (`lv_obj_center`). Build, flash, look.
-2. **Knob counter.** Register `knob_init(on_step)`; keep an `int` and update a label. Verify
-   one detent = one count, both directions; check the direction macro if reversed.
-3. **Touch target.** Add an `lv_obj` with `LV_EVENT_CLICKED`; tapping toggles a `bool`. Keep the
-   handler tiny: set state, call a `render()` function.
-4. **Colour = state.** Introduce `enum app_state { IDLE, ACTIVE }`, map it through
-   `theme_state_color()`, and tint the background or an arc. Use `theme_state_motion_ms()` to
-   pulse an arc with `lv_anim` while ACTIVE. Motion stays local to the arc.
-5. **Haptic cue.** `haptic_click()` on every state change, once. If it clicks twice, your
-   state changes twice.
-6. **Host test.** Move the "what happens on step / tap" decision into a pure `app_logic.c`
-   (state + event → new state), add `test/host/test_app_logic.c`, run `scripts/test.sh`.
+1. **Hello screen.** In `app_screen.c`, give the title your own text in `font_muli_28` and
+   add a separate small label for the state name so the title is not overwritten. Keep both
+   inside the safe circle (`lv_obj_center`, `HUD_SAFE_DIA`).
+2. **Knob counter.** `on_knob_step` in `app.c` already counts; make it wrap 0..99 in both
+   directions. One detent = one count; if the direction is reversed, the fix is the
+   `BOARD_KNOB_DIRECTION` macro, never the decoder.
+3. **Touch target.** Add a second tap zone (an `lv_obj` circle with its own callback) that
+   flips a `bool`. Use `LV_EVENT_SHORT_CLICKED` like the template: `LV_EVENT_CLICKED` also
+   fires after a long press, and the screen already uses `LV_EVENT_LONG_PRESSED`.
+   Handler tiny: set state, call a render function.
+4. **Colour = state.** Add `APP_PAUSED` mapped to `THEME_STATE_PAUSED`; the ring turns amber
+   and pulses with `theme_state_motion_ms()`. Motion stays local to the arc.
+5. **Haptic cue.** A different `haptic_play()` effect per state change, each exactly once.
+   If it clicks twice, your state changed twice.
+6. **Host test.** Move the wrap logic from rung 2 into a pure `app_logic.c` (state + event →
+   new state, no LVGL includes), add `test/host/test_app_logic.c`, run `scripts/test.sh`.
 
 Then continue with rungs 7–10 in the `networking-under-memory-constraints` skill.
 
