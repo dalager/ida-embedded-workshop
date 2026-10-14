@@ -1,6 +1,6 @@
 {
-  "name": "knob-workshop",
+  "name": "ida-embedded-workshop",
   "metadata": { "description": "Build small ESP-IDF + LVGL firmware for the Guition JC3636K518C round knob display with any AI coding tool: verified pinout and gotchas, memory and performance constraints, code organisation rules, a tested starter template, networking under memory constraints, and backend integration patterns." },
   "owner": { "name": "Christian Dalager" },
-  "plugins": [ { "name": "knob-workshop", "source": "./" } ]
+  "plugins": [ { "name": "ida-embedded-workshop", "source": "./" } ]
 }

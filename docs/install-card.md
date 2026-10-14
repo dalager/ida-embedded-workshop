@@ -1,6 +1,6 @@
 # Install card — plugin + toolchain
 
-Repo: `https://github.com/dalager/knob-workshop`. The plugin is six plain-Markdown skills plus a
+Repo: `https://github.com/dalager/ida-embedded-workshop`. The plugin is six plain-Markdown skills plus a
 starter template; it needs nothing Claude-specific and works in any Agent-Skills-aware tool.
 
 ## 1. Install the plugin in your AI tool
@@ -8,8 +8,8 @@ starter template; it needs nothing Claude-specific and works in any Agent-Skills
 **Claude Code**
 
 ```
-/plugin marketplace add dalager/knob-workshop
-/plugin install knob-workshop@knob-workshop
+/plugin marketplace add dalager/ida-embedded-workshop
+/plugin install ida-embedded-workshop@ida-embedded-workshop
 ```
 
 Then `/reload-plugins` (or start a new session). Check with `/plugin` → Installed.
@@ -17,36 +17,36 @@ Then `/reload-plugins` (or start a new session). Check with `/plugin` → Instal
 **Codex**
 
 ```bash
-codex plugin marketplace add dalager/knob-workshop
-codex plugin add knob-workshop@knob-workshop
+codex plugin marketplace add dalager/ida-embedded-workshop
+codex plugin add ida-embedded-workshop@ida-embedded-workshop
 ```
 
-Start a new session. `codex plugin marketplace upgrade knob-workshop` fetches updates.
+Start a new session. `codex plugin marketplace upgrade ida-embedded-workshop` fetches updates.
 
 **GitHub Copilot CLI**
 
 ```bash
-copilot plugin marketplace add dalager/knob-workshop
-copilot plugin install knob-workshop@knob-workshop
-copilot skill list        # should list the six knob-workshop skills
+copilot plugin marketplace add dalager/ida-embedded-workshop
+copilot plugin install ida-embedded-workshop@ida-embedded-workshop
+copilot skill list        # should list the six ida-embedded-workshop skills
 ```
 
 **Cursor**
 
-Cursor → Settings → Plugins → *Install from repository* → `https://github.com/dalager/knob-workshop`.
+Cursor → Settings → Plugins → *Install from repository* → `https://github.com/dalager/ida-embedded-workshop`.
 Or use the symlink fallback below into `~/.cursor/skills`.
 
 **Factory Droid**
 
 ```bash
-droid plugin marketplace add dalager/knob-workshop
-droid plugin install knob-workshop@knob-workshop --scope user
+droid plugin marketplace add dalager/ida-embedded-workshop
+droid plugin install ida-embedded-workshop@ida-embedded-workshop --scope user
 ```
 
 **Pi**
 
 ```bash
-pi install https://github.com/dalager/knob-workshop
+pi install https://github.com/dalager/ida-embedded-workshop
 ```
 
 Then `/reload` in an open session; `/skill:scaffold-knob-firmware` invokes a skill explicitly.
@@ -54,11 +54,11 @@ Then `/reload` in an open session; `/skill:scaffold-knob-firmware` invokes a ski
 **Universal fallback (any tool, including OpenCode, Kiro, Cline)**
 
 ```bash
-git clone https://github.com/dalager/knob-workshop ~/knob-workshop
+git clone https://github.com/dalager/ida-embedded-workshop ~/ida-embedded-workshop
 # pick the directory your tool scans; one or more of:
 for d in ~/.agents/skills ~/.copilot/skills ~/.cursor/skills ~/.config/opencode/skills \
          ~/.kiro/skills ~/.claude/skills; do
-  mkdir -p "$d" && ln -sfn ~/knob-workshop/skills/* "$d"/
+  mkdir -p "$d" && ln -sfn ~/ida-embedded-workshop/skills/* "$d"/
 done
 ```
 
@@ -115,8 +115,8 @@ host terminal. If the port is missing, `system_profiler SPUSBDataType | grep -A3
 ## 3. Smoke test (five minutes, before the first exercise)
 
 ```bash
-git clone https://github.com/dalager/knob-workshop
-cp -r knob-workshop/templates/knob-starter ~/my-knob && cd ~/my-knob
+git clone https://github.com/dalager/ida-embedded-workshop
+cp -r ida-embedded-workshop/templates/knob-starter ~/my-knob && cd ~/my-knob
 cp components/net/include/wifi_secrets.example.h components/net/include/wifi_secrets.h
 scripts/build.sh             # Docker; first run downloads managed components
 scripts/test.sh              # host unit tests, gcc + Unity, no hardware

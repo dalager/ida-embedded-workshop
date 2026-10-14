@@ -1,9 +1,9 @@
 {
-  "name": "knob-workshop",
-  "interface": { "displayName": "Knob Workshop" },
+  "name": "ida-embedded-workshop",
+  "interface": { "displayName": "IDA Embedded Workshop" },
   "plugins": [
     {
-      "name": "knob-workshop",
+      "name": "ida-embedded-workshop",
       "source": { "source": "local", "path": "./" },
       "policy": { "installation": "AVAILABLE", "authentication": "ON_INSTALL" },
       "category": "Developer Tools"

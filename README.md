@@ -1,4 +1,4 @@
-# Knob Workshop
+# IDA Embedded Workshop
 
 Build small ESP-IDF + LVGL firmware for the **Guition JC3636K518C** 1.8" round knob display
 (ESP32-S3, 360×360 ST77916 panel, CST816 touch, rotary knob, haptic, Wi-Fi) with **any AI coding
@@ -25,43 +25,43 @@ backend.
 **Claude Code**
 
 ```
-/plugin marketplace add dalager/knob-workshop
-/plugin install knob-workshop@knob-workshop
+/plugin marketplace add dalager/ida-embedded-workshop
+/plugin install ida-embedded-workshop@ida-embedded-workshop
 ```
 
 **Codex**
 
 ```bash
-codex plugin marketplace add dalager/knob-workshop
-codex plugin add knob-workshop@knob-workshop
+codex plugin marketplace add dalager/ida-embedded-workshop
+codex plugin add ida-embedded-workshop@ida-embedded-workshop
 ```
 
 **GitHub Copilot CLI**
 
 ```bash
-copilot plugin marketplace add dalager/knob-workshop
-copilot plugin install knob-workshop@knob-workshop
+copilot plugin marketplace add dalager/ida-embedded-workshop
+copilot plugin install ida-embedded-workshop@ida-embedded-workshop
 ```
 
 **Factory Droid**
 
 ```bash
-droid plugin marketplace add dalager/knob-workshop
-droid plugin install knob-workshop@knob-workshop --scope user
+droid plugin marketplace add dalager/ida-embedded-workshop
+droid plugin install ida-embedded-workshop@ida-embedded-workshop --scope user
 ```
 
 **Pi**
 
 ```bash
-pi install https://github.com/dalager/knob-workshop
+pi install https://github.com/dalager/ida-embedded-workshop
 ```
 
 **Cursor, Kiro, OpenCode, Cline, or anything that reads Agent Skills**
 
 ```bash
-git clone https://github.com/dalager/knob-workshop ~/knob-workshop
+git clone https://github.com/dalager/ida-embedded-workshop ~/ida-embedded-workshop
 for d in ~/.agents/skills ~/.cursor/skills ~/.kiro/skills ~/.config/opencode/skills ~/.cline/skills ~/.copilot/skills ~/.claude/skills; do
-  mkdir -p "$d" && for s in ~/knob-workshop/skills/*/; do ln -sfn "$s" "$d/$(basename "$s")"; done
+  mkdir -p "$d" && for s in ~/ida-embedded-workshop/skills/*/; do ln -sfn "$s" "$d/$(basename "$s")"; done
 done
 ```
 
@@ -78,12 +78,12 @@ written to work that way.
 ## Quick start
 
 ```bash
-cp -r ~/knob-workshop/templates/knob-starter my-knob && cd my-knob
+cp -r ~/ida-embedded-workshop/templates/knob-starter my-knob && cd my-knob
 cp components/net/include/wifi_secrets.example.h components/net/include/wifi_secrets.h   # edit it
 ./scripts/build.sh          # idf.py build inside Docker
 ./scripts/flash.sh          # host esptool --no-stub over /dev/ttyACM0
 ./scripts/test.sh           # gcc + Unity host tests, no IDF needed
-python3 ~/knob-workshop/templates/receiver/receiver.py --port 8080   # for the upload exercise
+python3 ~/ida-embedded-workshop/templates/receiver/receiver.py --port 8080   # for the upload exercise
 ```
 
 Then ask your AI tool to take you up the exercise ladder in `skills/scaffold-knob-firmware`.
@@ -91,7 +91,7 @@ Then ask your AI tool to take you up the exercise ladder in `skills/scaffold-kno
 ## Workshop material
 
 The workshop site with agenda, device cheat-sheet, install card and exercise ladder is at
-https://dalager.github.io/knob-workshop/.
+https://dalager.github.io/ida-embedded-workshop/.
 
 ## Licence
 
